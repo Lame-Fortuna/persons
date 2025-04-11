@@ -11,7 +11,7 @@ const PersonSchema = new mongoose.Schema({
 
 const Person = mongoose.model('Person', PersonSchema);
 
-// GET /person - List all people
+// List all people
 router.get('/', async (req, res) => {
   try {
     const people = await Person.find();
@@ -21,7 +21,20 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /person - Create a new person
+// Get Specific Person 
+router.get('/:id', async (req, res) => {
+  try {
+    const person = await Person.findById(req.params.id);
+    if (!person) {
+      return res.status(404).json({ message: 'Person not found' });
+    }
+    res.json(person);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Create a new person
 router.post('/', async (req, res) => {
   const person = new Person({
     name: req.body.name,
@@ -38,7 +51,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /person/:id - Update a person
+// Update a person
 router.put('/:id', async (req, res) => {
   try {
     const updatedPerson = await Person.findByIdAndUpdate(
@@ -53,7 +66,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /person/:id - Delete a person
+// Delete a person
 router.delete('/:id', async (req, res) => {
   try {
     const deleted = await Person.findByIdAndDelete(req.params.id);
